@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RutaIA - Sistema de Recomendación Académica Hextech</title>
+  
+  <!-- Google Fonts: Cinzel & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- PANTALLA COMPLETA DE AUTENTICACIÓN (BLOQUEO INICIAL) -->
+  <div class="auth-fullscreen-overlay" id="authOverlay">
+    <div class="hextech-auth-card">
+      <div class="auth-brand">
+        <div class="hextech-orb-mini"></div>
+        <h1 class="brand-title">RUTA<span>IA</span></h1>
+      </div>
+      <p class="auth-subtitle" id="authSubtitle">Registro de Nueva Cuenta Estudiantil</p>
+
+      <!-- Pestañas internas para alternar vistas -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" data-auth="registro">Registrarse</button>
+        <button class="auth-tab-btn" data-auth="login">Iniciar Sesión</button>
+      </div>
+
+      <!-- FORMULARIO DE REGISTRO -->
+      <form id="formRegistro" class="hextech-form auth-form active">
+        <div class="form-group">
+          <label for="regNombre">Nombre Completo</label>
+          <input type="text" id="regNombre" required placeholder="Ej: Jayce Talis">
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Correo Electrónico</label>
+          <input type="email" id="regEmail" required placeholder="ejemplo@piltover.edu">
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Crear Contraseña</label>
+          <input type="password" id="regPassword" required minlength="6" placeholder="Mín. 6 caracteres (letras y números)">
+          <small class="form-hint">Debe incluir al menos una letra y un número.</small>
+        </div>
+        <div class="form-group">
+          <label for="regNivel">Nivel de Experiencia</label>
+          <select id="regNivel" required>
+            <option value="">Selecciona un nivel...</option>
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="regInteres">Área de Interés Principal</label>
+          <input type="text" id="regInteres" required placeholder="Ej: Desarrollo Web, IA, Java">
+        </div>
+        <div class="form-group">
+          <label for="regComida">Comida Favorita</label>
+          <input type="text" id="regComida" required placeholder="Ej: Pizza de pepperoni">
+        </div>
+        <button type="submit" class="hextech-btn">
+          <span class="btn-text">Registrar la Cuenta</span>
+          <span class="btn-glow"></span>
+        </button>
+      </form>
+
+      <!-- FORMULARIO DE INICIO DE SESIÓN -->
+      <form id="formLogin" class="hextech-form auth-form">
+        <div class="form-group">
+          <label for="loginEmail">Correo Electrónico</label>
+          <input type="email" id="loginEmail" required placeholder="ejemplo@piltover.edu">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" required placeholder="Tu contraseña secreta">
+        </div>
+        <div class="form-group">
+          <label for="loginComida">Comida Favorita</label>
+          <input type="text" id="loginComida" required placeholder="Tu comida favorita registrada">
+        </div>
+        <button type="submit" class="hextech-btn">
+          <span class="btn-text">Iniciar de Sesión</span>
+          <span class="btn-glow"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ENCABEZADO Y NAVEGACIÓN -->
+  <header class="hextech-header">
+    <div class="brand-container">
+      <div class="hextech-orb-mini"></div>
+      <h1 class="brand-title">RUTA<span>IA</span></h1>
+    </div>
+
+    <nav class="hextech-nav" id="mainNav">
+      <button class="nav-btn active" data-target="sec-catalogo">Cursos</button>
+      <button class="nav-btn" data-target="sec-asistente">Asistente RAG</button>
+      <button class="nav-btn" data-target="sec-historial">Historial</button>
+      <button class="nav-btn" data-target="sec-calificar">Calificar</button>
+      <button class="nav-btn" data-target="sec-dashboard">Estadísticas</button>
+    </nav>
+
+    <div class="user-badge-container">
+      <div class="user-badge" id="userBadge">
+        <span class="badge-label">Estudiante:</span>
+        <span class="badge-value" id="activeStudentName">Cargando...</span>
+      </div>
+      <button class="logout-btn" id="btnLogout" title="Cerrar Sesión">⏻ Salir</button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL VISTAS SPA -->
+  <main class="main-container">
+
+    <!-- CATÁLOGO DE CURSOS -->
+    <section id="sec-catalogo" class="view-section active">
+      <div class="hextech-card">
+        <h2 class="section-title">Catálogo de Cursos Arcanos</h2>
+        <p class="section-subtitle">Explora el conocimiento disponible indexado en nuestra red Hextech.</p>
+
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label for="filterCat">Categoría:</label>
+            <select id="filterCat">
+              <option value="TODAS">Todas</option>
+              <option value="Desarrollo Web">Desarrollo Web</option>
+              <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+              <option value="Backend">Backend</option>
+              <option value="Base de Datos">Base de Datos</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterNivel">Nivel:</label>
+            <select id="filterNivel">
+              <option value="TODOS">Todos</option>
+              <option value="Principiante">Principiante</option>
+              <option value="Intermedio">Intermedio</option>
+              <option value="Avanzado">Avanzado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="courses-grid" id="coursesGrid"></div>
+      </div>
+    </section>
+
+    <!-- CONSULTA INTELIGENTE (RAG) -->
+    <section id="sec-asistente" class="view-section">
+      <div class="hextech-card">
+        <h2 class="section-title">Asistente RAG Arcando</h2>
+        <p class="section-subtitle">Sintetiza tu necesidad formativa en lenguaje natural para consultar la base de conocimiento.</p>
+
+        <form id="formConsulta" class="hextech-form">
+          <div class="form-group">
+            <label for="inputPrompt">¿Qué deseas aprender o construir?</label>
+            <textarea id="inputPrompt" rows="4" required placeholder="Ej: Quiero aprender a crear páginas web dinámicas utilizando JavaScript y conectar con APIs REST."></textarea>
+          </div>
+          <button type="submit" class="hextech-btn" id="btnConsultar">
+            <span class="btn-text">Obtener Recomendación</span>
+            <span class="btn-glow"></span>
+          </button>
+        </form>
+
+        <div class="loading-container hidden" id="loadingRAG">
+          <div class="hextech-orb-spinner"></div>
+          <p class="loading-text">Sintetizando vectores de conocimiento y procesando recomendación...</p>
+        </div>
+
+        <div class="rag-results hidden" id="ragResults">
+          <div class="ai-response-box">
+            <div class="ai-header">
+              <span class="ai-icon">◆</span>
+              <h3>Recomendación Generada por IA</h3>
+            </div>
+            <p id="aiResponseText"></p>
+          </div>
+          <h3 class="sources-title">Fuentes Semánticas Relevantes</h3>
+          <div class="sources-grid" id="sourcesGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORIAL DE CONSULTAS -->
+    <section id="sec-historial" class="view-section">
+      <div class="hextech-card">
+        <h2 class="section-title">Historial de Consultas</h2>
+        <p class="section-subtitle">Registro cronológico de tus interacciones con el núcleo de recomendación.</p>
+        <div class="table-container">
+          <table class="hextech-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Consulta / Pregunta</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="historialBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO DE CALIFICACIÓN -->
+    <section id="sec-calificar" class="view-section">
+      <div class="hextech-card">
+        <h2 class="section-title">Evaluación de Recomendaciones</h2>
+        <p class="section-subtitle">Evalúa la precisión y calidad de las respuestas entregadas por el sistema.</p>
+
+        <form id="formCalificar" class="hextech-form">
+          <div class="form-group">
+            <label for="selectConsultaCalificar">Selecciona Consulta a Calificar</label>
+            <select id="selectConsultaCalificar" required>
+              <option value="">Cargando consultas pasadas...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Puntuación Arcana</label>
+            <div class="rating-gems" id="ratingGems">
+              <span class="gem-star" data-value="1">◆</span>
+              <span class="gem-star" data-value="2">◆</span>
+              <span class="gem-star" data-value="3">◆</span>
+              <span class="gem-star" data-value="4">◆</span>
+              <span class="gem-star" data-value="5">◆</span>
+            </div>
+            <input type="hidden" id="inputRatingValue" value="0" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputComentario">Comentario Adicional (Opcional)</label>
+            <textarea id="inputComentario" rows="3" placeholder="¿La recomendación cubrió tus expectativas?"></textarea>
+          </div>
+
+          <button type="submit" class="hextech-btn">
+            <span class="btn-text">Enviar Calificación</span>
+            <span class="btn-glow"></span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- DASHBOARD DE ESTADÍSTICAS -->
+    <section id="sec-dashboard" class="view-section">
+      <div class="hextech-card">
+        <h2 class="section-title">Métricas y Telemetría del Sistema</h2>
+        <p class="section-subtitle">Estadísticas agregadas sobre la operación del recomendador.</p>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-title">Consultas Totales</span>
+            <span class="metric-value" id="mTotalConsultas">0</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Consultas Respondidas</span>
+            <span class="metric-value" id="mRespondidas">0</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Promedio Calificación</span>
+            <span class="metric-value" id="mPromedioCalf">0.0 / 5</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Curso Más Recomendado</span>
+            <span class="metric-value small" id="mTopCurso">Ninguno</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE DETALLE DE HISTORIAL -->
+  <div class="modal-overlay hidden" id="modalHistorial">
+    <div class="modal-card">
+      <button class="modal-close" id="btnCerrarModal">&times;</button>
+      <h3 class="modal-title" id="modalFecha">Detalle de Consulta</h3>
+      
+      <div class="modal-section">
+        <label>Pregunta Realizada:</label>
+        <p id="modalPregunta" class="modal-text"></p>
+      </div>
+
+      <div class="modal-section">
+        <label>Respuesta Sintetizada:</label>
+        <p id="modalRespuesta" class="modal-text highlight"></p>
+      </div>
+
+      <div class="modal-section">
+        <label>Fuentes Asociadas:</label>
+        <div id="modalFuentes" class="modal-fuentes-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="service.js"></script>
+</body>
+</html>
