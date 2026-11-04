@@ -1,4 +1,3 @@
-// src/config/database.js
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
@@ -8,9 +7,9 @@ const connectDB = async () => {
       // Las versiones recientes de Mongoose gestionan la conexión de forma nativa
     });
     
-    console.log(`✅ MongoDB Conectado exitosamente: ${conn.connection.host}`);
+    console.log(` MongoDB Conectado exitosamente: ${conn.connection.host}`);
   } catch (error) {
-    console.error(` Error al conectar a MongoDB: ${error.message}`);
+    console.error(` UUps!!, error al conectar a MongoDB: ${error.message}`);
     process.exit(1); 
   }
 };

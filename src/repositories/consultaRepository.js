@@ -1,9 +1,7 @@
-// src/repositories/consultaRepository.js
 const mongoose = require('mongoose');
-
 const consultaSchema = new mongoose.Schema({
   estudianteId: { 
-    type: String, // ✅ Cambiado a String para aceptar nombres o identificadores de texto libre
+    type: String, 
     required: [true, 'Toda consulta debe pertenecer a un estudiante'] 
   },
   pregunta: { 

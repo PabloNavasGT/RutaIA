@@ -1,6 +1,6 @@
 const Estudiante = require('../repositories/estudianteRepository');
 const { EstudianteResponseDTO } = require('../dtos/estudianteDto');
-const bcrypt = require('bcryptjs'); // Importar bcrypt
+const bcrypt = require('bcryptjs');
 
 class EstudianteService {
   async registrarEstudiante(data) {

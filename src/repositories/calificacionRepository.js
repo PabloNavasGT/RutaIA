@@ -1,4 +1,3 @@
-// src/repositories/calificacionRepository.js
 const mongoose = require('mongoose');
 
 const calificacionSchema = new mongoose.Schema({

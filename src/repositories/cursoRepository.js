@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const claseSchema = new mongoose.Schema({
+  numero: { type: Number, required: true },
+  titulo: { type: String, required: true, trim: true },
+  descripcion: { type: String, required: true },
+  puntuacion: { type: Number, default: 0, min: 0, max: 5 }
+}, { _id: true });
+
 const cursoSchema = new mongoose.Schema({
   nombre: { 
     type: String, 
@@ -30,10 +37,10 @@ const cursoSchema = new mongoose.Schema({
     enum: ['ACTIVO', 'INACTIVO'], 
     default: 'ACTIVO',
     index: true
-  }
+  },
+  clases: [claseSchema]
 }, { timestamps: true });
 
-// Prevenir recompilación del modelo si ya existe en memoria
 const Curso = mongoose.models.Curso || mongoose.model('Curso', cursoSchema);
 
 module.exports = Curso;

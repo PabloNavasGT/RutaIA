@@ -1,9 +1,7 @@
-/* ==========================================================================
-   CONFIGURACIÓN Y ESTADO GLOBAL
-   ========================================================================== */
 const API_BASE_URL = 'http://localhost:8080/api';
 
-let activeStudentName = localStorage.getItem('rutaia_student_name') || null;
+// Usamos sessionStorage para que la sesión expire al cerrar la pestaña o el navegador
+let activeStudentName = sessionStorage.getItem('rutaia_student_name') || null;
 let cursosData = [];
 let historialConsultas = [
   {
@@ -31,16 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCursos();
 });
 
-/* ==========================================================================
-   CONTROL DE ACCESO (GUARD) & PANTALLA COMPLETA
-   ========================================================================== */
+/* CONTROL DE ACCESO (GUARD) & PANTALLA COMPLETA */
 function checkAuthGuard() {
   const overlay = document.getElementById('authOverlay');
   if (activeStudentName) {
-    overlay.classList.add('hidden');
+    if (overlay) overlay.classList.add('hidden');
     updateBadgeUI();
   } else {
-    overlay.classList.remove('hidden');
+    if (overlay) overlay.classList.remove('hidden');
   }
 }
 
@@ -109,25 +105,25 @@ function initAuthScreen() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.mensaje || 'Error al registrar');
     
-      console.log('✅ Guardado en MongoDB exitosamente:', data);
-
+      // Guardamos credenciales en localStorage para que el Login pueda validarlas
       localStorage.setItem(`rutaia_user_${email}`, JSON.stringify(payload));
 
+      // Guardamos la sesión actual en sessionStorage (expira al cerrar pestaña)
       activeStudentName = nombre;
-      localStorage.setItem('rutaia_student_name', activeStudentName);
+      sessionStorage.setItem('rutaia_student_name', activeStudentName);
       
       checkAuthGuard();
       formReg.reset();
-      alert('¡Cuenta registrada y guardada en MongoDB exitosamente!');
+      alert('¡Cuenta registrada y sesión iniciada!');
 
     } catch (err) {
       console.warn('⚠️ Servidor backend offline. Guardando sesión localmente.');
       localStorage.setItem(`rutaia_user_${email}`, JSON.stringify(payload));
       activeStudentName = nombre;
-      localStorage.setItem('rutaia_student_name', activeStudentName);
+      sessionStorage.setItem('rutaia_student_name', activeStudentName);
       checkAuthGuard();
       formReg.reset();
-      alert('¡Cuenta registrada localmente (Backend offline)!');
+      alert('¡Cuenta registrada localmente y sesión iniciada!');
     }
   });
 
@@ -145,7 +141,7 @@ function initAuthScreen() {
       const user = JSON.parse(savedUserJson);
       if (user.password === password && user.comidaFavorita === comida) {
         activeStudentName = user.nombreCompleto;
-        localStorage.setItem('rutaia_student_name', activeStudentName);
+        sessionStorage.setItem('rutaia_student_name', activeStudentName);
         checkAuthGuard();
         formLogin.reset();
         return;
@@ -158,18 +154,20 @@ function initAuthScreen() {
     }
   });
 
-  document.getElementById('btnLogout').addEventListener('click', () => {
-    if (confirm('¿Deseas cerrar tu sesión actual?')) {
-      localStorage.removeItem('rutaia_student_name');
-      activeStudentName = null;
-      checkAuthGuard();
-    }
-  });
+  // 3. BOTÓN CERRAR SESIÓN
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      if (confirm('¿Deseas cerrar tu sesión actual?')) {
+        sessionStorage.removeItem('rutaia_student_name'); 
+        activeStudentName = null;
+        checkAuthGuard();
+      }
+    });
+  }
 }
 
-/* ==========================================================================
-   NAVEGACIÓN SPA
-   ========================================================================== */
+/* NAVEGACIÓN SPA */
 function initNavigation() {
   const navBtns = document.querySelectorAll('.hextech-nav .nav-btn');
   const sections = document.querySelectorAll('.view-section');
@@ -189,35 +187,35 @@ function initNavigation() {
   });
 }
 
-/* ==========================================================================
-   CATÁLOGO DE CURSOS
-   ========================================================================== */
+/* CATÁLOGO Y VISTA DETALLADA DE CURSOS CON 10 CLASES */
 async function fetchCursos() {
   try {
     const res = await fetch(`${API_BASE_URL}/cursos`);
     if (!res.ok) throw new Error('Falló al obtener cursos');
     cursosData = await res.json();
+    console.log(' Cursos cargados desde MongoDB:', cursosData.length);
   } catch (err) {
-    cursosData = [
-      { id: 1, nombre: 'Frontend Web Moderno', descripcion: 'HTML5, CSS3 Grid/Flexbox y JavaScript Vanilla avanzado.', categoria: 'Desarrollo Web', nivel: 'Principiante', duracion: '40 hrs' },
-      { id: 2, nombre: 'Arquitectura Java Spring Boot', descripcion: 'Desarrollo de Microservicios y APIs RESTful robustas.', categoria: 'Backend', nivel: 'Intermedio', duracion: '60 hrs' },
-      { id: 3, nombre: 'Introducción a RAG e IA', descripcion: 'Integración de LLMs, Embeddings y Bases de Datos Vectoriales.', categoria: 'Inteligencia Artificial', nivel: 'Avanzado', duracion: '45 hrs' },
-      { id: 4, nombre: 'PostgreSQL & Optimización', descripcion: 'Diseño relacional, índices y consultas complejas.', categoria: 'Base de Datos', nivel: 'Intermedio', duracion: '35 hrs' }
-    ];
+    console.warn(' Error al conectar con el backend de cursos:', err);
+    cursosData = [];
   }
   renderCursos(cursosData);
 }
 
 function renderCursos(cursos) {
   const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
   grid.innerHTML = '';
-  if (cursos.length === 0) {
-    grid.innerHTML = '<p style="color:var(--text-muted)">No hay cursos que coincidan con el filtro.</p>';
+  
+  if (!cursos || cursos.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1; text-align:center; padding:2rem;">No hay cursos disponibles. Ejecuta node src/seed.js en tu terminal.</p>';
     return;
   }
+
   cursos.forEach(c => {
     const card = document.createElement('div');
     card.className = 'course-card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => abrirDetalleCurso(c._id || c.id);
     card.innerHTML = `
       <div>
         <h3 class="course-title">${c.nombre}</h3>
@@ -225,7 +223,7 @@ function renderCursos(cursos) {
       </div>
       <div class="course-tags">
         <span>${c.categoria}</span>
-        <span>${c.nivel}</span>
+        <span>${c.nivel} (${c.clases ? c.clases.length : 10} Clases)</span>
       </div>
     `;
     grid.appendChild(card);
@@ -237,8 +235,9 @@ function initCoursesModule() {
   const fNivel = document.getElementById('filterNivel');
 
   const aplicarFiltros = () => {
-    const catVal = fCat.value;
-    const nivelVal = fNivel.value;
+    const catVal = fCat ? fCat.value : 'TODAS';
+    const nivelVal = fNivel ? fNivel.value : 'TODOS';
+    
     const filtrados = cursosData.filter(c => {
       const matchCat = catVal === 'TODAS' || c.categoria === catVal;
       const matchNivel = nivelVal === 'TODOS' || c.nivel === nivelVal;
@@ -247,17 +246,101 @@ function initCoursesModule() {
     renderCursos(filtrados);
   };
 
-  fCat.addEventListener('change', aplicarFiltros);
-  fNivel.addEventListener('change', aplicarFiltros);
+  if (fCat) fCat.addEventListener('change', aplicarFiltros);
+  if (fNivel) fNivel.addEventListener('change', aplicarFiltros);
 }
 
-/* ==========================================================================
-   ASISTENTE RAG
-   ========================================================================== */
+function abrirDetalleCurso(cursoId) {
+  const curso = cursosData.find(c => (c._id || c.id) === cursoId);
+  if (!curso) return;
+
+  const modal = document.getElementById('modalCursoDetalle');
+  if (!modal) return;
+
+  document.getElementById('modalCursoNombre').textContent = curso.nombre;
+  document.getElementById('modalCursoCategoria').textContent = `${curso.categoria} • ${curso.nivel} (${curso.duracion})`;
+  document.getElementById('modalCursoDesc').textContent = curso.descripcion;
+
+  const list = document.getElementById('modalClasesList');
+  list.innerHTML = '';
+
+  const clases = curso.clases && curso.clases.length > 0 ? curso.clases : Array.from({ length: 10 }, (_, i) => ({
+    _id: `clase_${i + 1}`,
+    numero: i + 1,
+    titulo: `Clase ${i + 1}: Tema especializado`,
+    descripcion: `Contenido práctico de la lección número ${i + 1}.`,
+    puntuacion: 0
+  }));
+
+  clases.forEach(clase => {
+    const claseEl = document.createElement('div');
+    claseEl.className = 'course-card';
+    claseEl.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <strong style="color:var(--gold-light)">Clase ${clase.numero}: ${clase.titulo}</strong>
+        <div class="rating-gems" data-clase-id="${clase._id}" style="font-size: 1.3rem;">
+          ${[1, 2, 3, 4, 5].map(v => `<span class="gem-star ${v <= (clase.puntuacion || 0) ? 'active' : ''}" data-value="${v}">◆</span>`).join('')}
+        </div>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem">${clase.descripcion}</p>
+    `;
+    list.appendChild(claseEl);
+
+    // Calificación de cada clase con gemas (1 a 5)
+    const gems = claseEl.querySelectorAll('.gem-star');
+    gems.forEach(gem => {
+      gem.addEventListener('click', async () => {
+        const p = parseInt(gem.getAttribute('data-value'));
+        clase.puntuacion = p;
+        gems.forEach(g => {
+          if (parseInt(g.getAttribute('data-value')) <= p) g.classList.add('active');
+          else g.classList.remove('active');
+        });
+
+        try {
+          await fetch(`${API_BASE_URL}/cursos/${curso._id || curso.id}/clases/${clase._id}/calificar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ puntuacion: p })
+          });
+        } catch (e) {
+          console.warn('Calificación de clase guardada localmente.');
+        }
+      });
+    });
+  });
+
+  modal.classList.remove('hidden');
+
+  // Botón de cierre
+  const btnCerrar = document.getElementById('btnCerrarModalCurso');
+  if (btnCerrar) {
+    btnCerrar.onclick = () => modal.classList.add('hidden');
+  }
+
+  // Cerrar al hacer clic fuera de la tarjeta modal
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  };
+}
+
+// Cerrar con la tecla ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('modalCursoDetalle');
+    if (modal) modal.classList.add('hidden');
+  }
+});
+
+/* ASISTENTE RAG */
 function initRAGModule() {
   const form = document.getElementById('formConsulta');
   const loading = document.getElementById('loadingRAG');
   const results = document.getElementById('ragResults');
+
+  if (!form) return;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -280,10 +363,10 @@ function initRAGModule() {
       await new Promise(r => setTimeout(r, 1200));
       resultData = {
         id: Date.now(),
-        respuestaIA: `Recomendación procesada para ${activeStudentName} basada en: "${promptText}". Te sugerimos iniciar con Frontend y Spring Boot.`,
+        respuestaIA: `¡Hola ${activeStudentName}! Es un gusto saludarte. Analizando tu consulta: "${promptText}", te recomiendo iniciar con nuestros cursos especializados.`,
         fuentes: [
-          { nombre: 'Frontend Web Moderno', categoria: 'Desarrollo Web', score: '92%' },
-          { nombre: 'Arquitectura Java Spring Boot', categoria: 'Backend', score: '87%' }
+          { nombre: 'Frontend Web Moderno', categoria: 'Desarrollo Web', score: '95%' },
+          { nombre: 'Arquitectura Java Spring Boot', categoria: 'Backend', score: '88%' }
         ]
       };
     }
@@ -319,20 +402,21 @@ function initRAGModule() {
   });
 }
 
-/* ==========================================================================
-   HISTORIAL & MODAL
-   ========================================================================== */
+/* HISTORIAL & MODAL */
 function initHistorialModule() {
   renderHistorial();
   const modal = document.getElementById('modalHistorial');
-  document.getElementById('btnCerrarModal').addEventListener('click', () => {
-    modal.classList.add('hidden');
-  });
+  const btnCerrar = document.getElementById('btnCerrarModal');
+  if (btnCerrar && modal) {
+    btnCerrar.addEventListener('click', () => modal.classList.add('hidden'));
+  }
 }
 
 function renderHistorial() {
   const tbody = document.getElementById('historialBody');
   const selectCalf = document.getElementById('selectConsultaCalificar');
+  if (!tbody || !selectCalf) return;
+
   tbody.innerHTML = '';
   selectCalf.innerHTML = '<option value="">Selecciona una consulta...</option>';
 
@@ -363,18 +447,18 @@ window.verDetalleHistorial = function(id) {
   document.getElementById('modalHistorial').classList.remove('hidden');
 };
 
-/* ==========================================================================
-   CALIFICACIÓN
-   ========================================================================== */
+/* CALIFICACIÓN */
 function initRatingModule() {
   const gems = document.querySelectorAll('#ratingGems .gem-star');
   const inputVal = document.getElementById('inputRatingValue');
   const form = document.getElementById('formCalificar');
 
+  if (!form) return;
+
   gems.forEach(gem => {
     gem.addEventListener('click', () => {
       const rating = parseInt(gem.getAttribute('data-value'));
-      inputVal.value = rating;
+      if (inputVal) inputVal.value = rating;
       gems.forEach(g => {
         if (parseInt(g.getAttribute('data-value')) <= rating) {
           g.classList.add('active');
@@ -388,7 +472,7 @@ function initRatingModule() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const consultaId = document.getElementById('selectConsultaCalificar').value;
-    const puntuacion = inputVal.value;
+    const puntuacion = inputVal ? inputVal.value : '0';
 
     if (!consultaId || puntuacion === '0') {
       alert('Selecciona una consulta y asigna una puntuación con gemas.');
@@ -408,16 +492,19 @@ function initRatingModule() {
     alert('¡Gracias por evaluar la recomendación!');
     form.reset();
     gems.forEach(g => g.classList.remove('active'));
-    inputVal.value = '0';
+    if (inputVal) inputVal.value = '0';
   });
 }
 
-/* ==========================================================================
-   DASHBOARD
-   ========================================================================== */
+/*DASHBOARD */
 function updateDashboardMetrics() {
-  document.getElementById('mTotalConsultas').textContent = historialConsultas.length;
-  document.getElementById('mRespondidas').textContent = historialConsultas.filter(h => h.estado === 'Respondida').length;
-  document.getElementById('mPromedioCalf').textContent = '4.8 / 5';
-  document.getElementById('mTopCurso').textContent = 'Frontend Web Moderno';
+  const mTotal = document.getElementById('mTotalConsultas');
+  const mResp = document.getElementById('mRespondidas');
+  const mProm = document.getElementById('mPromedioCalf');
+  const mTop = document.getElementById('mTopCurso');
+
+  if (mTotal) mTotal.textContent = historialConsultas.length;
+  if (mResp) mResp.textContent = historialConsultas.filter(h => h.estado === 'Respondida').length;
+  if (mProm) mProm.textContent = '4.8 / 5';
+  if (mTop) mTop.textContent = cursosData.length > 0 ? cursosData[0].nombre : 'Frontend Web Moderno';
 }

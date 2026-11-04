@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RutaIA - Sistema de Recomendación Académica Hextech</title>
-  
-  <!-- Google Fonts: Cinzel & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +12,6 @@
 </head>
 <body>
 
-  <!-- PANTALLA COMPLETA DE AUTENTICACIÓN (BLOQUEO INICIAL) -->
   <div class="auth-fullscreen-overlay" id="authOverlay">
     <div class="hextech-auth-card">
       <div class="auth-brand">
@@ -23,13 +20,12 @@
       </div>
       <p class="auth-subtitle" id="authSubtitle">Registro de Nueva Cuenta Estudiantil</p>
 
-      <!-- Pestañas internas para alternar vistas -->
+
       <div class="auth-tabs">
         <button class="auth-tab-btn active" data-auth="registro">Registrarse</button>
         <button class="auth-tab-btn" data-auth="login">Iniciar Sesión</button>
       </div>
 
-      <!-- FORMULARIO DE REGISTRO -->
       <form id="formRegistro" class="hextech-form auth-form active">
         <div class="form-group">
           <label for="regNombre">Nombre Completo</label>
@@ -67,7 +63,7 @@
         </button>
       </form>
 
-      <!-- FORMULARIO DE INICIO DE SESIÓN -->
+      
       <form id="formLogin" class="hextech-form auth-form">
         <div class="form-group">
           <label for="loginEmail">Correo Electrónico</label>
@@ -89,7 +85,6 @@
     </div>
   </div>
 
-  <!-- ENCABEZADO Y NAVEGACIÓN -->
   <header class="hextech-header">
     <div class="brand-container">
       <div class="hextech-orb-mini"></div>
@@ -113,10 +108,8 @@
     </div>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL VISTAS SPA -->
   <main class="main-container">
 
-    <!-- CATÁLOGO DE CURSOS -->
     <section id="sec-catalogo" class="view-section active">
       <div class="hextech-card">
         <h2 class="section-title">Catálogo de Cursos Arcanos</h2>
@@ -149,33 +142,32 @@
       </div>
     </section>
 
-    <!-- CONSULTA INTELIGENTE (RAG) -->
     <section id="sec-asistente" class="view-section">
       <div class="hextech-card">
-        <h2 class="section-title">Asistente RAG Arcando</h2>
-        <p class="section-subtitle">Sintetiza tu necesidad formativa en lenguaje natural para consultar la base de conocimiento.</p>
+        <h2 class="section-title">Asistente Virtual Arcano</h2>
+        <p class="section-subtitle">Conversa con tu guía de IA especializado. Cuéntale qué metas deseas alcanzar y consultará los vectores de conocimiento para ti.</p>
 
         <form id="formConsulta" class="hextech-form">
           <div class="form-group">
-            <label for="inputPrompt">¿Qué deseas aprender o construir?</label>
-            <textarea id="inputPrompt" rows="4" required placeholder="Ej: Quiero aprender a crear páginas web dinámicas utilizando JavaScript y conectar con APIs REST."></textarea>
+            <label for="inputPrompt">¿Qué deseas aprender o construir hoy?</label>
+            <textarea id="inputPrompt" rows="4" required placeholder="Hola Asistente, me gustaría aprender a crear APIs robustas utilizando bases de datos y Node.js..."></textarea>
           </div>
           <button type="submit" class="hextech-btn" id="btnConsultar">
-            <span class="btn-text">Obtener Recomendación</span>
+            <span class="btn-text">Consultar con el Asistente</span>
             <span class="btn-glow"></span>
           </button>
         </form>
 
         <div class="loading-container hidden" id="loadingRAG">
           <div class="hextech-orb-spinner"></div>
-          <p class="loading-text">Sintetizando vectores de conocimiento y procesando recomendación...</p>
+          <p class="loading-text">Buscando en la base vectorial Qdrant y redactando respuesta personalizada...</p>
         </div>
 
         <div class="rag-results hidden" id="ragResults">
           <div class="ai-response-box">
             <div class="ai-header">
               <span class="ai-icon">◆</span>
-              <h3>Recomendación Generada por IA</h3>
+              <h3>Respuesta del Asistente</h3>
             </div>
             <p id="aiResponseText"></p>
           </div>
@@ -185,7 +177,6 @@
       </div>
     </section>
 
-    <!-- HISTORIAL DE CONSULTAS -->
     <section id="sec-historial" class="view-section">
       <div class="hextech-card">
         <h2 class="section-title">Historial de Consultas</h2>
@@ -206,7 +197,6 @@
       </div>
     </section>
 
-    <!-- MÓDULO DE CALIFICACIÓN -->
     <section id="sec-calificar" class="view-section">
       <div class="hextech-card">
         <h2 class="section-title">Evaluación de Recomendaciones</h2>
@@ -234,7 +224,7 @@
 
           <div class="form-group">
             <label for="inputComentario">Comentario Adicional (Opcional)</label>
-            <textarea id="inputComentario" rows="3" placeholder="¿La recomendación cubrió tus expectativas?"></textarea>
+            <textarea id="inputComentario" rows="3" placeholder="¿La atención y recomendación cubrieron tus expectativas?"></textarea>
           </div>
 
           <button type="submit" class="hextech-btn">
@@ -245,7 +235,6 @@
       </div>
     </section>
 
-    <!-- DASHBOARD DE ESTADÍSTICAS -->
     <section id="sec-dashboard" class="view-section">
       <div class="hextech-card">
         <h2 class="section-title">Métricas y Telemetría del Sistema</h2>
@@ -274,7 +263,6 @@
 
   </main>
 
-  <!-- MODAL DE DETALLE DE HISTORIAL -->
   <div class="modal-overlay hidden" id="modalHistorial">
     <div class="modal-card">
       <button class="modal-close" id="btnCerrarModal">&times;</button>
@@ -294,6 +282,20 @@
         <label>Fuentes Asociadas:</label>
         <div id="modalFuentes" class="modal-fuentes-list"></div>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="modalCursoDetalle">
+    <div class="modal-card modal-large" style="position: relative; max-width: 700px; max-height: 85vh; overflow-y: auto;">
+      <button class="modal-close" id="btnCerrarModalCurso" style="position: sticky; top: 0; float: right; z-index: 10; font-size: 1.8rem; background: var(--bg-surface); border: none; color: var(--gold-primary); cursor: pointer; padding: 0.2rem 0.6rem;">&times;</button>
+      <div class="modal-header">
+        <span class="badge-value" id="modalCursoCategoria">Categoría</span>
+        <h2 class="modal-title" id="modalCursoNombre" style="margin-top:0.5rem">Nombre del Curso</h2>
+        <p class="section-subtitle" id="modalCursoDesc" style="margin-top:0.3rem"></p>
+      </div>
+
+      <h3 class="section-title" style="font-size: 1.2rem; margin-top: 1.5rem;">Índice del Curso (10 Clases)</h3>
+      <div class="clases-list" id="modalClasesList" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;"></div>
     </div>
   </div>
 

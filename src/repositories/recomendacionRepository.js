@@ -1,4 +1,3 @@
-// src/repositories/recomendacionRepository.js
 const mongoose = require('mongoose');
 
 const fuenteSchema = new mongoose.Schema({

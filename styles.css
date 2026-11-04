@@ -36,9 +36,8 @@ body {
   flex-direction: column;
 }
 
-/* ==========================================================================
-   PANTALLA COMPLETA DE AUTENTICACIÓN (BLOQUEO)
-   ========================================================================== */
+/* 
+   PANTALLA COMPLETA DE AUTENTICACIÓN  */
 .auth-fullscreen-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -116,9 +115,8 @@ form.auth-form {
 form.auth-form.active {
   display: flex !important;
 }
-/* ==========================================================================
-   HEADER Y NAVEGACIÓN
-   ========================================================================== */
+/*
+   HEADER Y NAVEGACIÓN */
 .hextech-header {
   background: linear-gradient(180deg, #071c2c 0%, rgba(3, 19, 30, 0.95) 100%);
   border-bottom: 2px solid var(--gold-primary);
@@ -226,9 +224,8 @@ form.auth-form.active {
   box-shadow: 0 0 10px rgba(217, 83, 79, 0.5);
 }
 
-/* ==========================================================================
-   CONTENEDOR Y TARJETAS
-   ========================================================================== */
+/* 
+   CONTENEDOR Y TARJETAS */
 .main-container {
   max-width: 1200px;
   width: 100%;
@@ -269,9 +266,8 @@ form.auth-form.active {
   font-size: 0.95rem;
 }
 
-/* ==========================================================================
-   FORMULARIOS Y COMPONENTES
-   ========================================================================== */
+/* 
+   FORMULARIOS Y COMPONENTES */
 .hextech-form {
   display: flex;
   flex-direction: column;
@@ -335,9 +331,7 @@ form.auth-form.active {
   transform: translateY(-2px);
 }
 
-/* ==========================================================================
-   CATÁLOGO DE CURSOS Y FILTROS
-   ========================================================================== */
+/*   CATÁLOGO DE CURSOS Y FILTROS */
 .filter-bar {
   display: flex;
   gap: 1.5rem;
@@ -411,9 +405,7 @@ form.auth-form.active {
   padding-top: 0.5rem;
 }
 
-/* ==========================================================================
-   RAG RESULTADOS Y SPINNER
-   ========================================================================== */
+/* RAG RESULTADOS Y SPINNER*/
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -471,9 +463,7 @@ form.auth-form.active {
   float: right;
 }
 
-/* ==========================================================================
-   TABLA E HISTORIAL
-   ========================================================================== */
+/* TABLA E HISTORIAL*/
 .table-container {
   overflow-x: auto;
 }
@@ -499,9 +489,7 @@ form.auth-form.active {
   background: rgba(0, 210, 255, 0.05);
 }
 
-/* ==========================================================================
-   CALIFICACIÓN CON GEMAS
-   ========================================================================== */
+/* CALIFICACIÓN CON GEMAS */
 .rating-gems {
   display: flex;
   gap: 0.75rem;
@@ -519,9 +507,7 @@ form.auth-form.active {
   text-shadow: 0 0 10px var(--hextech-blue);
 }
 
-/* ==========================================================================
-   DASHBOARD METRICAS
-   ========================================================================== */
+/*  DASHBOARD METRICAS*/
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -552,9 +538,7 @@ form.auth-form.active {
 
 .metric-value.small { font-size: 1.2rem; color: var(--gold-light); }
 
-/* ==========================================================================
-   MODAL
-   ========================================================================== */
+/* MODAL */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

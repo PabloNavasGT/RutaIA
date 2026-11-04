@@ -3,7 +3,7 @@ const router = express.Router();
 const estudianteService = require('../services/estudianteService');
 const Consulta = require('../repositories/consultaRepository');
 
-// Registrar un nuevo estudiante (RF 01)
+// Registrar un nuevo estudiante 
 router.post('/', async (req, res, next) => {
   try {
     const nuevoEstudiante = await estudianteService.registrarEstudiante(req.body);
@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-//Consultar historial de un estudiante (RF 02 / RF 16)
+//Consultar historial de un estudiante 
 router.get('/:id/historial', async (req, res, next) => {
   try {
     const { id } = req.params;

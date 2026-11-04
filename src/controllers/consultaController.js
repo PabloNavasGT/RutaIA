@@ -1,10 +1,9 @@
-// src/controllers/consultaController.js
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const Consulta = require('../repositories/consultaRepository');
 
-// POST /api/consultas - Recibe la pregunta del estudiante y la reenvía a n8n
+//Recibe la pregunta del estudiante y la reenvía a n8n
 router.post('/', async (req, res, next) => {
   try {
     const { estudiante, prompt, estudianteId, pregunta } = req.body;
@@ -33,7 +32,7 @@ router.post('/', async (req, res, next) => {
     }
 
     // 3. Enviar la petición POST al flujo local de n8n
-    console.log(`📤 Reenviando consulta a n8n (${n8nWebhookUrl})...`);
+    console.log(` Reenviando consulta a n8n (${n8nWebhookUrl})...`);
     const respuestaN8N = await axios.post(n8nWebhookUrl, {
       consultaId: nuevaConsulta._id,
       estudiante: idEstudiante,
@@ -55,7 +54,7 @@ router.post('/', async (req, res, next) => {
     });
 
   } catch (err) {
-    console.error('❌ Error en el flujo de consulta IA:', err.message);
+    console.error('Error en el flujo de consulta IA:', err.message);
     next(err);
   }
 });

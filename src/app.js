@@ -41,6 +41,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor backend corriendo en el puerto ${PORT}`);
-  console.log(`📚 Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
+  console.log(` Servidor backend corriendo en el puerto ${PORT}`);
+  console.log(` Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
 });

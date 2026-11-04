@@ -1,4 +1,3 @@
-// src/controllers/cursoController.js
 const express = require('express');
 const router = express.Router();
 const Curso = require('../repositories/cursoRepository');
