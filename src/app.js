@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
-
+const Consulta = require('./repositories/consultaRepository');
 const { specs: swaggerSpec } = require('./config/swagger');
 const swaggerUi = require('swagger-ui-express');
 
@@ -15,7 +15,7 @@ require('dotenv').config();
 
 const app = express();
 
-// Configuración robusta de CORS para admitir Live Server en cualquier puerto (5500 - 5509)
+// Configuración robusta de CORS para admitir Live Server en cualquier puerto
 app.use(cors({
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -41,6 +41,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(` Servidor backend corriendo en el puerto ${PORT}`);
-  console.log(`Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
+  console.log(`🚀 Servidor backend corriendo en el puerto ${PORT}`);
+  console.log(`📚 Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
 });

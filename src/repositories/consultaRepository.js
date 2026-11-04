@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 
 const consultaSchema = new mongoose.Schema({
   estudianteId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Estudiante', 
-    required: [true, 'Toda consulta debe pertenecer a un estudiante existente'] 
+    type: String, // ✅ Cambiado a String para aceptar nombres o identificadores de texto libre
+    required: [true, 'Toda consulta debe pertenecer a un estudiante'] 
   },
   pregunta: { 
     type: String, 

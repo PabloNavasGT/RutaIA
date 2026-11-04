@@ -30,16 +30,12 @@ const estudianteSchema = new mongoose.Schema({
     type: String, 
     required: [true, 'El área de interés es obligatoria'],
     trim: true
-  },
-  comidaFavorita: { 
+  },comidaFavorita: { 
     type: String, 
     required: [true, 'La comida favorita es obligatoria'],
     lowercase: true,
     trim: true
   }
 }, { timestamps: true });
-
-// Índice único
-estudianteSchema.index({ email: 1 }, { unique: true });
 
 module.exports = mongoose.model('Estudiante', estudianteSchema);

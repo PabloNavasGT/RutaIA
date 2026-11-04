@@ -1,29 +1,23 @@
-/**
- * RUTAIA - LÓGICA PRINCIPAL VANILLA JS
- * Control de Autenticación con separación estricta de vistas
- */
-
+/* ==========================================================================
+   CONFIGURACIÓN Y ESTADO GLOBAL
+   ========================================================================== */
 const API_BASE_URL = 'http://localhost:8080/api';
 
 let activeStudentName = localStorage.getItem('rutaia_student_name') || null;
 let cursosData = [];
 let historialConsultas = [
   {
-    id: 101,
-    fecha: '2026-10-28 14:30',
-    pregunta: 'Quiero aprender desarrollo backend con Java y APIs REST.',
+    id: 1718000001000,
+    fecha: '2026/10/30 10:15:00',
+    pregunta: 'Quiero aprender desarrollo web moderno usando JavaScript y frameworks.',
     estado: 'Respondida',
-    respuesta: 'Se recomienda iniciar con el curso de Backend Spring Boot, complementado con bases de datos relacionales.',
-    fuentes: [{ nombre: 'Backend Spring Boot', categoria: 'Backend', score: '95%' }]
+    respuesta: 'Te recomendamos iniciar con nuestro curso de Frontend Web Moderno y complementar con arquitecturas de backend.',
+    fuentes: [
+      { nombre: 'Frontend Web Moderno', categoria: 'Desarrollo Web', score: '95%' },
+      { nombre: 'Arquitectura Java Spring Boot', categoria: 'Backend', score: '88%' }
+    ]
   }
 ];
-
-function updateBadgeUI() {
-  const badgeName = document.getElementById('activeStudentName');
-  if (badgeName && activeStudentName) {
-    badgeName.textContent = activeStudentName;
-  }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthGuard();
@@ -48,6 +42,11 @@ function checkAuthGuard() {
   } else {
     overlay.classList.remove('hidden');
   }
+}
+
+function updateBadgeUI() {
+  const el = document.getElementById('activeStudentName');
+  if (el) el.textContent = activeStudentName || 'Invitado';
 }
 
 function initAuthScreen() {
@@ -112,7 +111,6 @@ function initAuthScreen() {
     
       console.log('✅ Guardado en MongoDB exitosamente:', data);
 
-      // CORRECCIÓN FALLO #2: Guardar el usuario completo localmente para que el Login funcione
       localStorage.setItem(`rutaia_user_${email}`, JSON.stringify(payload));
 
       activeStudentName = nombre;
@@ -123,8 +121,13 @@ function initAuthScreen() {
       alert('¡Cuenta registrada y guardada en MongoDB exitosamente!');
 
     } catch (err) {
-      console.error('❌ Error al conectar con el backend:', err);
-      alert('Error al conectar con el servidor backend. Revisa la consola.');
+      console.warn('⚠️ Servidor backend offline. Guardando sesión localmente.');
+      localStorage.setItem(`rutaia_user_${email}`, JSON.stringify(payload));
+      activeStudentName = nombre;
+      localStorage.setItem('rutaia_student_name', activeStudentName);
+      checkAuthGuard();
+      formReg.reset();
+      alert('¡Cuenta registrada localmente (Backend offline)!');
     }
   });
 
@@ -291,16 +294,18 @@ function initRAGModule() {
 
     const sourcesGrid = document.getElementById('sourcesGrid');
     sourcesGrid.innerHTML = '';
-    resultData.fuentes.forEach(f => {
-      const sc = document.createElement('div');
-      sc.className = 'source-card';
-      sc.innerHTML = `
-        <span class="source-score">${f.score}</span>
-        <strong>${f.nombre}</strong>
-        <p style="color:var(--text-muted); margin-top:0.3rem">${f.categoria}</p>
-      `;
-      sourcesGrid.appendChild(sc);
-    });
+    if (resultData.fuentes && Array.isArray(resultData.fuentes)) {
+      resultData.fuentes.forEach(f => {
+        const sc = document.createElement('div');
+        sc.className = 'source-card';
+        sc.innerHTML = `
+          <span class="source-score">${f.score}</span>
+          <strong>${f.nombre}</strong>
+          <p style="color:var(--text-muted); margin-top:0.3rem">${f.categoria}</p>
+        `;
+        sourcesGrid.appendChild(sc);
+      });
+    }
 
     historialConsultas.unshift({
       id: resultData.id || Date.now(),
@@ -308,7 +313,7 @@ function initRAGModule() {
       pregunta: promptText,
       estado: 'Respondida',
       respuesta: resultData.respuestaIA,
-      fuentes: resultData.fuentes
+      fuentes: resultData.fuentes || []
     });
     renderHistorial();
   });
@@ -366,7 +371,7 @@ function initRatingModule() {
   const inputVal = document.getElementById('inputRatingValue');
   const form = document.getElementById('formCalificar');
 
-  gems.exports = gems.forEach(gem => {
+  gems.forEach(gem => {
     gem.addEventListener('click', () => {
       const rating = parseInt(gem.getAttribute('data-value'));
       inputVal.value = rating;

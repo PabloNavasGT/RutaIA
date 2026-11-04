@@ -9,6 +9,7 @@ yarn-error.log*
 .env.local
 .env.production
 
+
 # Datos locales de Docker / n8n / Qdrant
 n8n_data/
 qdrant_data/
