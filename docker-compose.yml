@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # 1. Base de Datos MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: rutaia_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - rutaia_net
+
+  # 2. Tu Backend Node.js / Express
+  backend:
+    build: .
+    container_name: rutaia_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - MONGO_URI=mongodb://mongodb:27017/rutaia
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook/tu-webhook-id # O usa la URL de test según prefieras
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongodb
+      - n8n
+    networks:
+      - rutaia_net
+
+  # 3. n8n local integrado en Docker
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: rutaia_n8n
+    restart: always
+    ports:
+      - "5679:5678"
+    environment:
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - rutaia_net
+
+volumes:
+    mongo_data:
+    n8n_data:
+
+networks:
+  rutaia_net:
+    driver: bridge
